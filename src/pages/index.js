@@ -50,6 +50,12 @@ export default function Home() {
     const [workspaceId, setWorkspaceId] = useState("");
     const [hours, setHours] = useState("");
 
+    function clearText(){
+        document.getElementById("employee_id").value = "";
+        document.getElementById("workspace_id").value = "";
+        document.getElementById("hours").value = "";
+    }
+
     // データを送信する関数
     const sendInfo = () => {
         const apiUrl = "http://localhost:8080/work_entries/";
@@ -68,9 +74,7 @@ export default function Home() {
         .then(response => {
             console.log(response.data);
             // フォームをクリア
-            setEmployeeId("");
-            setWorkspaceId("");
-            setHours("");
+            clearText();
         })
         .catch(error => {
             console.error(error);
