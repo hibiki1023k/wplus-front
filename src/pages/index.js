@@ -3,32 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react"; // useStateフックをインポート
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 async function sendWorkEntry(employee_id, workplace_id, date, hours) {
   const data = {
-    "employee_id": employee_id,
-    "workplace_id": workplace_id,
-    "date": date,
-    "hours": hours,
+    employee_id: employee_id,
+    workplace_id: workplace_id,
+    date: date,
+    hours: hours,
   };
-  console.log(data)
 
   try {
-    const response = await fetch('http://localhost:8080/work_entries', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      "http://" + process.env.NEXT_PUBLIC_ADDRESS + "/work_entries", //TODO:
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
-    console.log('Status Code:', response.status); // Print out the status code
+    console.log("Status Code:", response.status); // Print out the status code
 
     const responseData = await response.json();
-    console.log('Response Data:', JSON.stringify(responseData, null, 2)); // Print out the formatted JSON response
+    console.log("Response Data:", JSON.stringify(responseData, null, 2)); // Print out the formatted JSON response
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
   }
 }
 
@@ -47,7 +50,7 @@ export default function Home() {
   // 送信ボタンが押されたときに実行される関数
   const sendInfo = () => {
     // 日付の 'T' 以前の部分だけを取得して使用する
-    const formattedDate = new Date().toISOString().split('T')[0];
+    const formattedDate = new Date().toISOString().split("T")[0];
 
     // hours の値を整数に変換する
     const intHours = parseInt(hours, 10); // 10は基数を示し、10進数の変換を意味します
@@ -58,8 +61,6 @@ export default function Home() {
     sendWorkEntry(intEmployeeId, intWorkspaceId, formattedDate, intHours);
     clearText(); // テキストフィールドをクリア
   };
-
-
 
   return (
     <main className="bg-background">
