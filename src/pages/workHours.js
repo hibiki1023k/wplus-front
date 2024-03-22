@@ -3,15 +3,15 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
 function WorkHours() {
-  const router = useRouter();
-  const { workplaceId, employeeId } = router.query; // Next.js の useRouter を使用
+  const router = useRouter(); // Next.js の useRouter を使用
+  const { officeId, employeeId } = router.query;
   const [name, setName] = useState('');
 
   useEffect(() => {
-    if (!workplaceId || !employeeId) return; // 追加: パラメータが未定義の場合はリクエストを送らない
+    if (!officeId || !employeeId) return; // 追加: パラメータが未定義の場合はリクエストを送らない
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/workHours/${workplaceId}/${employeeId}`);
+        const response = await fetch(`http://localhost:3000/workHours/${officeId}/${employeeId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -24,7 +24,7 @@ function WorkHours() {
     };
 
     fetchData();
-  }, [workplaceId, employeeId]);
+  }, [officeId, employeeId]);
 
   return (
     <div>

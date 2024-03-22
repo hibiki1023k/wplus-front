@@ -1,18 +1,7 @@
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import WorkHours from "./workHours"; // WorkHours コンポーネントをインポートします
+import '../styles/globals.css'
 
-function App() {
-  return (
-    <Router>
-      <Switch>
-        <Route
-          path="/workHours/:workplaceId/:employeeId"
-          component={WorkHours}
-        />
-        {/* 他のルート定義 */}
-      </Switch>
-    </Router>
-  );
+function MyApp({ Component, pageProps }) {
+    return <Component {...pageProps} />
 }
 
-export default App;
+export default MyApp;

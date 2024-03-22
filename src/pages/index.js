@@ -1,34 +1,49 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// EmployeeEntry.js
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { login } from "./api/login";
+
 export default function EmployeeEntry() {
-  const [workplaceId, setWorkplaceId] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const router = useRouter(); // ページ遷移用
-
-  const handleSubmit = async () => {
-    // ここでAPIを呼び出して従業員の名前を取得することもできます
-    // 今回は、名前を直接次のページに渡す代わりに、IDを使用します
-    router.push(`/workHours/${workplaceId}/${employeeId}`);
-  };
-
-  return (
+    const [officeId, setOfficeId] = useState("");
+    const [userId, setUserId] = useState("");
+    const [pass, setPass] = useState("");
+    const router = useRouter(); // ページ遷移用
+    
+    const handleSubmit = async() => {
+        const loginData = {
+            office_id: officeId,
+            user_id: userId,
+            password: pass
+        };
+        const token = await login(loginData);
+        console.log(token);
+        
+        //TODO: workHours.jsへのページ遷移
+        router.push(`/workHours/${officeId}/${userId}`);
+    };
+    
+    return (
     <div className="">
-      <input
-        type="text"
-        value={workplaceId}
-        onChange={(e) => setWorkplaceId(e.target.value)}
-        placeholder="事業所ID"
-      />
-      <input
-        type="text"
-        value={employeeId}
-        onChange={(e) => setEmployeeId(e.target.value)}
-        placeholder="従業員ID"
-      />
-      <button onClick={handleSubmit}>送信</button>
+        <Input
+            type="text"
+            value={officeId}
+            onChange={(e) => setOfficeId(e.target.value)}
+            placeholder="事業所番号"
+        />
+        <Input
+            type="text"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            placeholder="ユーザ番号"
+        />
+        <Input
+            type="password"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
+            placeholder="パスワード"
+        />
+        <Button onClick={handleSubmit}>ログイン</Button>
     </div>
-  );
+    );
 }
