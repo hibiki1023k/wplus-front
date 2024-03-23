@@ -18,8 +18,7 @@ export default function EmployeeEntry() {
         };
         const token = await login(loginData);
         console.log(token);
-        
-        //TODO: workHours.jsへのページ遷移
+
         router.push(`/workHours/${officeId}/${userId}`);
     };
     

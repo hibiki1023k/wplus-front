@@ -4,24 +4,23 @@ import { useEffect, useState } from 'react';
 function WorkHoursPage() {
     const router = useRouter();
     const { office_id, user_id } = router.query;
-    const [name, setName] = useState('');
+    const [userName, setUserName] = useState('');
     
     useEffect(() => {
         // 実際のアプリケーションでは、ここでAPIを呼び出してデータを取得
-        async function fetchData() {
-            const response = await fetch(`/api/data?office_id=${office_id}&user_id=${user_id}`);
-            const data = await response.json();
-            setName(data.name);
-        }
-        
         if (office_id && user_id) {
-            fetchData();
+            fetch(`/api/users/${office_id}&/${user_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    setUserName(data.name);
+                })
+                .catch(error => console.error('Error: fetching data:', error));
         }
     }, [office_id, user_id]);
     
     return (
         <div>
-            {name ? <div>{`${employee_id}さん、今日は何時間働きましたか？`}</div> : <div>Loading...</div>}
+            {userName ? <div>{`${userName}さん、今日は何時間働きましたか？`}</div> : <div>Loading...</div>}
             {/* 労働時間を入力するための UI 要素をここに追加 */}
         </div>
     );
