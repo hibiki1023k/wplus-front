@@ -37,5 +37,5 @@ next-env.d.ts
 
 .env*
 .envrc
-
+node_modules
 .idea
