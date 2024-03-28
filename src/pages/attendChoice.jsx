@@ -10,7 +10,7 @@ export default function AttendChoice() {
     const handleRegister = () => {
         if(usr.role !== 'admin'){
             router.push(
-                `/register/${usr.office_id}/${usr.employee_id}?data=${dataString}`
+                `/register/?data=${dataString}`
             );
         } else {
             alert('管理者は勤怠登録ができません。');
@@ -20,7 +20,7 @@ export default function AttendChoice() {
     const handleManage = () => {
         if(usr.role !== 'employee'){
             router.push(
-                `/admin/${usr.office_id}?data=${dataString}`
+                `/admin/?data=${dataString}`
             );
         } else {
             alert('従業員は勤怠管理ができません。');
