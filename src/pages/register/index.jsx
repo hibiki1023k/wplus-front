@@ -9,13 +9,13 @@ export default function register() {
   //   employee_id: 1,
   //   name: "test_user",
   // };
-  const dataObject = dataString ? JSON.parse(decodeURIComponent(dataString)) : null; // JSON文字列をオブジェクトに変換する（dataが存在する場合）
+  const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null; // JSON文字列をオブジェクトに変換する（dataが存在する場合）
 
     return (
         <div>
-            {dataObject.name ? (
+            {usr.name ? (
                 <div>
-                    {`${dataObject.name}さん、今日は何時間働きましたか？`}
+                    {`${usr.name}さん、今日は何時間働きましたか？`}
                 </div>
             ) : (
                 <div>Loading...</div>

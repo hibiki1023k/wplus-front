@@ -5,13 +5,13 @@ export default function manage() {
     const router = useRouter();
     const { data: dataString } = router.query;
 
-    const dataObject = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
     return (
         <div>
-            {dataObject.office_id ? (
+            {usr.office_id ? (
                 <div>
-                    {`${dataObject.office_id}の管理画面`}
+                    {`${usr.office_id}の管理画面`}
                 </div>
             ) : (
                 <div>Loading...</div>
