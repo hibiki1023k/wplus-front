@@ -4,11 +4,11 @@ import fetch from "node-fetch";
 const base_url = "http://" + process.env.DOMAIN + ":8080";
 const headers = { "Content-Type": "application/json" };
 
-const loginData = {
-    office_id: 1,
-    user_id: 1,
-    password: "pass",
-};
+// const loginData = {
+//     office_id: 1,
+//     user_id: 1,
+//     password: "pass",
+// };
 
 export default async function login(req, res) {
     try {
