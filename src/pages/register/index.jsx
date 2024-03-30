@@ -10,19 +10,34 @@ export default function register() {
     const router = useRouter();
     const {data: dataString} = router.query;
     const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
-
-    // テスト用
-    // const usr = {
-    //     office_id: 1,
-    //     employee_id: 1,
-    //     name: 'test_user'
-    // }
+    
+    const fetchEmployees = async (employeeId) => {
+        try {
+            const response = await fetch(`api/employees`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            if(response.ok) {
+                const employeeRecord = await response.json();
+                return employeeRecord;
+            } else {
+                console.log("Error fetching data", response.status);
+                return null;
+            }
+        } catch(error) {
+            console.log("Error fetching data", error);
+            return null;
+        }
+    };
 
     const handleSubmitTime = async () => {
+        const employees = await fetchEmployees(usr.employee_id);
         const work_entries = {
             id: usr.user_id,
             employee_id: usr.employee_id,
-            workplace_id: usr.workplace_id,
+            workplace_id: employees.workplace_id,
             date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
             start_time: start,
             end_time: end,

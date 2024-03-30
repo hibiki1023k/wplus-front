@@ -1,36 +1,27 @@
 // pages/api/work_entries/delete.js
+import fetch from 'node-fetch';
 
-import { connectToDatabase } from "@/lib/db"; // データベース接続関数を適切にインポート
-
-export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
-    }
-
-    // リクエストからエントリIDを取得
-    const { entryId } = req.body;
-
-    if (!entryId) {
-        return res.status(400).json({ message: 'Entry ID is required' });
-    }
-
-    try {
-        const db = await connectToDatabase();
-        const collection = db.collection('work_entries');
-
-        // isVisibleフィールドをfalseに更新
-        const result = await collection.updateOne(
-            { id: entryId },
-            { $set: { isVisible: false } }
-        );
-
-        if (result.modifiedCount === 0) {
-            return res.status(404).json({ message: 'Entry not found' });
+const base_url = "http://" + process.env.DOMAIN + ":8080";
+const headers = { "Content-Type": "application/json" };
+export default async function deleteRecord(req, res){
+    try{
+        const { delete_id } = req.body;
+        console.log(delete_id);
+        const deleteResponse = await fetch(base_url+"/delete", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({id: delete_id})
+        });
+        
+        if(!deleteResponse.ok){
+            throw new Error("Delete Failed:", deleteResponse.status);
         }
-
-        return res.status(200).json({ message: 'Entry updated successfully' });
-    } catch (error) {
-        console.error('Error updating entry:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
+        
+        const deleteResult = await deleteResponse.json();
+        console.log(deleteResult);
+        res.status(200).json("Delete Executed");
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }

@@ -36,8 +36,6 @@ export default async function login(req, res) {
     }
 }
 
-login(loginData);
-
 // console.log(login(loginData));
 // expected output:
 // $ node api/login.js

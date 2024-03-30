@@ -6,17 +6,17 @@ import { useRouter } from "next/router";
 export default function PunchOut() {
     const router = useRouter();
     const {dataSended: dataString} = router.query;
-    // const work_entries = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const work_entries = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
-    const work_entries = {
-        id: 1, // user_id
-        employee_id: 1,
-        workplace_id: 1,
-        date: new Date(),
-        start_time: "09:00",
-        end_time: "18:00",
-        comment: "test"
-    }
+    // const work_entries = {
+    //     id: 1, // user_id
+    //     employee_id: 1,
+    //     workplace_id: 1,
+    //     date: new Date(),
+    //     start_time: "09:00",
+    //     end_time: "18:00",
+    //     comment: "test"
+    // }
 
     return (
         <div>
