@@ -54,16 +54,16 @@ export default function Register() {
         fetchData();
     }, []);
 
-    const deleteRow = async (id) => {
+    const deleteRow = async (employee_id) => {
         try {
             const response = await fetch("/api/work_entries/delete", {
-                method: "POST",
+                method: "DELETE",
                 headers: {
                     "Content-type": "application/json",
                 },
-                body: JSON.stringify(id),
+                body: JSON.stringify(employee_id),
             });
-            console.log(id);
+            // console.log(employee_id);
             if(response.ok){
                 alert("データを削除しました。");
             } else {
@@ -77,11 +77,11 @@ export default function Register() {
 
     return (
         <div>
-            <div>
-                <Button>
-                    従業員登録
-                </Button>
-            </div>
+            {/*<div>*/}
+            {/*    <Button>*/}
+            {/*        従業員登録*/}
+            {/*    </Button>*/}
+            {/*</div>*/}
             <div className="flex items-center justify-center min-h-44 ">
                 <div className="w-1/3">
                     <Select onValueChange={setSelectValue} defaultValue="">
@@ -106,7 +106,7 @@ export default function Register() {
             </div>
             <div>
                 <Table>
-                    <TableCaption>hogehoge</TableCaption>
+                    <TableCaption>WPLUS</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead>職場番号</TableHead>
@@ -130,7 +130,7 @@ export default function Register() {
                                     <TableCell>{record.end_time}</TableCell>
                                     <TableCell>{record.comment}</TableCell>
                                     <TableCell>
-                                        <Button onClick={() => deleteRow(record.id)}>
+                                        <Button onClick={() => deleteRow(record.employee_id)}>
                                             削除
                                         </Button>
                                     </TableCell>

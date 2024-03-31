@@ -11,8 +11,8 @@ export default function EmployeeEntry() {
 
     const handleSubmit = async () => {
         const loginData = {
-        office_id: parseInt(officeId, 10),
-        user_id: parseInt(userId, 10),
+        office_id: Number(officeId),
+        user_id: Number(userId),
         password: pass,
         };
 
@@ -26,9 +26,7 @@ export default function EmployeeEntry() {
             });
             console.log(loginData);
             if (response.ok) {
-                const { data, token } = await response.json();
-                console.log(data);
-                console.log(token);
+                const { data: data, token: token } = await response.json();
 
                 // dataオブジェクトをjson文字列にエンコード
                 const dataString = encodeURIComponent(JSON.stringify(data));

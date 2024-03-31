@@ -1,14 +1,9 @@
 // fetch APIを使用する
 import fetch from "node-fetch";
+import cookie from "cookie";
 
-const base_url = "http://" + process.env.DOMAIN + ":8080";
+const base_url = process.env.BASE_URL;
 const headers = { "Content-Type": "application/json" };
-
-// const loginData = {
-//     office_id: 1,
-//     user_id: 1,
-//     password: "pass",
-// };
 
 export default async function login(req, res) {
     try {
@@ -27,8 +22,9 @@ export default async function login(req, res) {
         .get("set-cookie")
         .split(";")[0]
         .split("=")[1];
-        console.log(token);
 
+        res.setHeader("Set-cookie", cookie.serialize("token", token, {path: "/", httpOnly: true, maxAge: 60*60}));
+        
         res.status(200).json({ data: loginResult, token: token });
     } catch (error) {
         console.error("Error:", error);

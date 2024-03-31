@@ -1,16 +1,15 @@
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function AttendChoice() {
     const router = useRouter();
-    const {dataSended: dataString } = router.query;
-    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const {dataSended } = router.query;
+    const usr = dataSended ? JSON.parse(decodeURIComponent(dataSended)) : null;
 
     const handleRegister = () => {
         if(usr.role !== 'admin'){
             router.push(
-                `/register/?data=${dataString}`
+                `/register/?data=${dataSended}`
             );
         } else {
             alert('管理者は勤怠登録ができません。');
@@ -20,7 +19,7 @@ export default function AttendChoice() {
     const handleManage = () => {
         if(usr.role !== 'employee'){
             router.push(
-                `/admin/?data=${dataString}`
+                `/admin/?data=${dataSended}`
             );
         } else {
             alert('従業員は勤怠管理ができません。');

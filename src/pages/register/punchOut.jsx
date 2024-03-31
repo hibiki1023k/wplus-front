@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 export default function PunchOut() {
     const router = useRouter();
     const {dataSended: dataString} = router.query;
+    console.log(dataString);
     const work_entries = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
     return (

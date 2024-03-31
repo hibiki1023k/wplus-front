@@ -19,51 +19,79 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-export default function Manage() {
+export default function Register() {
     const router = useRouter();
-    const { data: dataString } = router.query;
-
     const [selectValue, setSelectValue] = useState("");
     const [records, setRecords] = useState([])
-
+    const { data: dataString } = router.query;
+    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    console.log(usr);
+    
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch("/api/work_entries/retrieve");
-            if(!response.ok){
-                console.error("Error fetching data");
-                return;
-            }
-            const data = await response.json();
-            const formatted = data.map(item => ({
-                id: Number(item.id),
-                employee_id: Number(item.employee_id),
-                workplace_id: Number(item.workplace_id),
-                date: new Date(item.date).toLocaleDateString("ja-JP", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit"
-                }).replaceAll('/', '-'),
-                start_time: item.start_time,
-                end_time: item.end_time,
-                comment: item.comment,
-            }));
-            setRecords(formatted);
-            console.log("break");
-        };
+            try{
+                if(!usr || !usr.office_id){
+                    
+                }
+                // cookieからtokenを取得する
+                const token_response = await fetch("/api/getCookie", {
+                    method: "GET",
+                    headers: {
+                    "Content-Type": "application/json",
+                    },
+                });
+                if(!token_response.ok){
+                    throw new Error("Token Fetch Failed:", token_response.status);
+                }
+                const usr_token = await token_response.json();
+                console.log("Token Received", usr_token);
 
+                // usr.office_idを/retrieveに送信する
+                console.log(usr.office_id);
+                const office_id = usr.office_id;
+                const response = await fetch(`/api/work_entries/retrieve/${office_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${usr_token}`,
+                    },
+                });
+                if(!response.ok){
+                    console.error("Error fetching data");
+                    return;
+                }
+                const data = await response.json();
+                console.log(data);
+            } catch(error) {
+                console.log("Error fetching data", error);
+            }
+        };
+        
         fetchData();
     }, []);
-
+    
     const deleteRow = async (id) => {
         try {
-            const response = await fetch("/api/work_entries/delete", {
-                method: "POST",
+            const token_response = await fetch("/api/getCookie", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if(!token_response.ok){
+                throw new Error("Token Fetch Failed:", token_response.status);
+            }
+            const usr_token = await token_response.json();
+            console.log("Token Received", usr_token);
+            
+            const response = await fetch(`/api/work_entries/delete/${id}`, {
+                method: "DELETE",
                 headers: {
                     "Content-type": "application/json",
-                },
-                body: JSON.stringify(id),
+                    "Authorization": `Bearer ${usr_token}`
+                }
             });
-            console.log(id);
+            // console.log(id);
             if(response.ok){
                 alert("データを削除しました。");
             } else {
@@ -74,14 +102,14 @@ export default function Manage() {
             console.log("Error fetching data", error);
         }
     };
-
+    
     return (
         <div>
-            <div>
-                <Button>
-                    従業員登録
-                </Button>
-            </div>
+            {/*<div>*/}
+            {/*    <Button>*/}
+            {/*        従業員登録*/}
+            {/*    </Button>*/}
+            {/*</div>*/}
             <div className="flex items-center justify-center min-h-44 ">
                 <div className="w-1/3">
                     <Select onValueChange={setSelectValue} defaultValue="">
@@ -106,11 +134,11 @@ export default function Manage() {
             </div>
             <div>
                 <Table>
-                    <TableCaption>hogehoge</TableCaption>
+                    <TableCaption>WPLUS</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>職場番号</TableHead>
-                            <TableHead>従業員番号</TableHead>
+                            <TableHead>職場名</TableHead>
+                            <TableHead>従業員名</TableHead>
                             <TableHead>日付</TableHead>
                             <TableHead>開始時刻</TableHead>
                             <TableHead>終了時刻</TableHead>
@@ -120,11 +148,10 @@ export default function Manage() {
                     <TableBody>
                         {/* TODO:mapメソッドでwork_entriesの数だけ追加する */}
                         {records
-                            .filter(record => record.workplace_id === Number(selectValue) || selectValue === "")
                             .map((record) => (
                                 <TableRow key={record.id}>
-                                    <TableCell>{record.workplace_id}</TableCell>
-                                    <TableCell>{record.employee_id}</TableCell>
+                                    <TableCell>{record.workplace_name}</TableCell>
+                                    <TableCell>{record.employee_name}</TableCell>
                                     <TableCell>{record.date}</TableCell>
                                     <TableCell>{record.start_time}</TableCell>
                                     <TableCell>{record.end_time}</TableCell>
@@ -138,6 +165,11 @@ export default function Manage() {
                             ))}
                     </TableBody>
                 </Table>
+                <div>
+                    <Button onClick={() => router.push(`../attendChoice?dataSended=${dataString}`)}>
+                        戻る
+                    </Button>
+                </div>
             </div>
         </div>
     );

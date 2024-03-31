@@ -1,38 +1,32 @@
-const base_url = "http://" + process.env.DOMAIN + ":8080";
-const headers = { "Content-Type": "application/json" };
-const { Pool } = require("pg");
-const pool = new Pool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
-    port: process.env.DB_PORT
-});
+import fetch from "node-fetch";
+import cookie from "cookie";
+
+const base_url = process.env.BASE_URL;
 
 export default async function retrieve(req, res){
-    if(req.method === "GET"){
-        try {
-            const records = await fetchRecords();
-            res.status(200).json(records);
-        } catch(error) {
-            console.log(error);
-            res.status(500).json({ message: "Internal Server Error" })
-        }
-    } else {
-        // GETメソッド以外のリクエストに対して`405`を返す
-        res.setHeader("Allow", ["GET"]);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
-}
+    try{
+        const office_id = req.query.office_id;
+        const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
+        const token = cookies.token;
 
-async function fetchRecords(){
-    const query = 'SELECT * FROM work_entries';
-    
-    try {
-        const { rows } = await pool.query(query);
-        return rows;
-    } catch(error) {
+        if (!token) {
+            res.status(401).json({ error: 'Unauthorized: No token provided' });
+            return;
+        }
+
+        const response = await fetch(`${base_url}/work_entries/office/${office_id}/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        });
+        const result = await response.json();
+        console.log(result);
+
+        res.status(200).json({ record: result });
+    } catch(error){
         console.error(error);
-        throw error;
+        res.status(500).json({error: 'Internal Server Error'});
     }
 }

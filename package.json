@@ -17,6 +17,9 @@
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "cookie": "^0.6.0",
+    "cookie-parser": "^1.4.6",
+    "js-cookie": "^3.0.5",
     "json-cyclic": "^1.0.2",
     "lucide-react": "^0.344.0",
     "next": "14.1.2",
@@ -31,10 +34,16 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/node": "20.12.2",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.3.0"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "main": "tailwind.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
