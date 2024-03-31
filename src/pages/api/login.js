@@ -10,7 +10,7 @@ export default async function login(req, res) {
         const loginData = req.body;
         console.log(loginData);
         // ログインリクエストを送信
-        const loginResponse = await fetch(base_url + "/login", {
+        const loginResponse = await fetch(base_url + "/login/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify(loginData),
@@ -19,12 +19,12 @@ export default async function login(req, res) {
         console.log(loginResult); // レスポンスのJSONを表示
         // Cookieからトークンを取得
         const token = loginResponse.headers
-        .get("set-cookie")
-        .split(";")[0]
-        .split("=")[1];
+            .get("set-cookie")
+            .split(";")[0]
+            .split("=")[1];
 
-        res.setHeader("Set-cookie", cookie.serialize("token", token, {path: "/", httpOnly: true, maxAge: 60*60}));
-        
+        res.setHeader("Set-cookie", cookie.serialize("token", token, { path: "/", httpOnly: true, maxAge: 60 * 60 }));
+
         res.status(200).json({ data: loginResult, token: token });
     } catch (error) {
         console.error("Error:", error);

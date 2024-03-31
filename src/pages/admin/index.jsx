@@ -19,18 +19,21 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-// function formatMicrosecondsToTime(microseconds) {
-//     // マイクロ秒をミリ秒に変換
-//     const milliseconds = microseconds / 1000;
-//     // ミリ秒から日付オブジェクトを作成
-//     const date = new Date(milliseconds);
-//     // 時間と分を取得
-//     const hours = date.getUTCHours();
-//     const minutes = date.getUTCMinutes();
-//     // ゼロ埋めしてフォーマット
-//     const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-//     return formattedTime;
-// }
+function formatMicrosecondsToTime(microseconds) {
+    // マイクロ秒をミリ秒に変換
+    const milliseconds = microseconds / 1000;
+    // ミリ秒から日付オブジェクトを作成
+    const date = new Date(milliseconds);
+    console.log(date);
+    // 時間と分を取得
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    console.log(hours, minutes);
+    // ゼロ埋めしてフォーマット
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    console.log(formattedTime);
+    return formattedTime;
+}
 
 export default function Register() {
     const router = useRouter();
@@ -40,7 +43,6 @@ export default function Register() {
     const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
     useEffect(() => {
-        if (!router.isReady) return;
         const fetchData = async () => {
             try {
                 // cookieからtokenを取得する
@@ -54,7 +56,6 @@ export default function Register() {
                     throw new Error("Token Fetch Failed:", token_response.status);
                 }
                 const usr_token = await token_response.json();
-                console.log("Token Received", usr_token);
 
                 const response = await fetch(`/api/retrieve/${usr.office_id}`, {
                     method: "GET",
@@ -70,6 +71,7 @@ export default function Register() {
                 const data = await response.json();
                 console.log(data);
                 setRecords(data.record);
+                console.log(records);
             } catch (error) {
                 console.log("Error fetching data", error);
             }
@@ -161,8 +163,8 @@ export default function Register() {
                                     <TableCell>{record.workplace_name}</TableCell>
                                     <TableCell>{record.employee_name}</TableCell>
                                     <TableCell>{record.date}</TableCell>
-                                    {/* <TableCell>{formatMicrosecondsToTime(data.record[i].start_time.Milliseconds)}</TableCell>
-                                    <TableCell>{formatMicrosecondsToTime(data.record[i].end_time.Milliseconds)}</TableCell> */}
+                                    <TableCell>{formatMicrosecondsToTime(record.start_time.Microseconds)}</TableCell>
+                                    <TableCell>{formatMicrosecondsToTime(record.end_time.Microseconds)}</TableCell>
                                     <TableCell>{record.comment}</TableCell>
                                     <TableCell>
                                         <Button onClick={() => deleteRow(record.id)}>
