@@ -40,6 +40,7 @@ export default function Register() {
     const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
     useEffect(() => {
+        if (!router.isReady) return;
         const fetchData = async () => {
             try {
                 // cookieからtokenを取得する
@@ -68,7 +69,10 @@ export default function Register() {
                 }
                 const data = await response.json();
                 console.log(data);
+<<<<<<< HEAD
                 setRecords(data.record);
+=======
+>>>>>>> origin/dev
             } catch (error) {
                 console.log("Error fetching data", error);
             }
