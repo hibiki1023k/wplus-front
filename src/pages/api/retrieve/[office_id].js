@@ -5,11 +5,10 @@ const base_url = process.env.BASE_URL;
 
 export default async function retrieve(req, res) {
   try {
-    const office_id = req.query;
     const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
     const token = cookies.token;
 
-    console.log("office_id: ", office_id);
+    const office_id = req.query.office_id;
 
     if (!token) {
       res.status(401).json({ error: "Unauthorized: No token provided" });
