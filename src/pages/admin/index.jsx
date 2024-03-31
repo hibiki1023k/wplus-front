@@ -19,69 +19,107 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-export default function Manage() {
-    const router = useRouter();
-    const { data: dataString } = router.query;
+function formatMicrosecondsToTime(microseconds) {
+    // マイクロ秒をミリ秒に変換
+    const milliseconds = microseconds / 1000;
+    // ミリ秒から日付オブジェクトを作成
+    const date = new Date(milliseconds);
+    console.log(date);
+    // 時間と分を取得
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    console.log(hours, minutes);
+    // ゼロ埋めしてフォーマット
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    console.log(formattedTime);
+    return formattedTime;
+}
 
+export default function Register() {
+    const router = useRouter();
     const [selectValue, setSelectValue] = useState("");
     const [records, setRecords] = useState([])
+    const { data: dataString } = router.query;
+    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch("/api/work_entries/retrieve");
-            if(!response.ok){
-                console.error("Error fetching data");
-                return;
+            try {
+                // cookieからtokenを取得する
+                const token_response = await fetch("/api/getCookie", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (!token_response.ok) {
+                    throw new Error("Token Fetch Failed:", token_response.status);
+                }
+                const usr_token = await token_response.json();
+
+                const response = await fetch(`/api/retrieve/${usr.office_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${usr_token}`,
+                    },
+                });
+                if (!response.ok) {
+                    console.error("Error fetching data");
+                    return;
+                }
+                const data = await response.json();
+                console.log(data);
+                setRecords(data.record);
+                console.log(records);
+            } catch (error) {
+                console.log("Error fetching data", error);
             }
-            const data = await response.json();
-            const formatted = data.map(item => ({
-                id: Number(item.id),
-                employee_id: Number(item.employee_id),
-                workplace_id: Number(item.workplace_id),
-                date: new Date(item.date).toLocaleDateString("ja-JP", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit"
-                }).replaceAll('/', '-'),
-                start_time: item.start_time,
-                end_time: item.end_time,
-                comment: item.comment,
-            }));
-            setRecords(formatted);
-            console.log("break");
         };
 
         fetchData();
-    }, []);
+    }, [records, usr.office_id]);
 
     const deleteRow = async (id) => {
         try {
-            const response = await fetch("/api/work_entries/delete", {
-                method: "POST",
+            const token_response = await fetch("/api/getCookie", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!token_response.ok) {
+                throw new Error("Token Fetch Failed:", token_response.status);
+            }
+            const usr_token = await token_response.json();
+            console.log("Token Received", usr_token);
+
+            const response = await fetch(`/api/work_entries/delete/${id}`, {
+                method: "DELETE",
                 headers: {
                     "Content-type": "application/json",
-                },
-                body: JSON.stringify(id),
+                    "Authorization": `Bearer ${usr_token}`
+                }
             });
-            console.log(id);
-            if(response.ok){
+            // console.log(id);
+            if (response.ok) {
                 alert("データを削除しました。");
             } else {
                 alert("削除に失敗しました。");
                 console.log("Delete Failed:", response.status);
             }
-        } catch(error) {
+        } catch (error) {
             console.log("Error fetching data", error);
         }
     };
 
     return (
         <div>
-            <div>
-                <Button>
-                    従業員登録
-                </Button>
-            </div>
+            {/*<div>*/}
+            {/*    <Button>*/}
+            {/*        従業員登録*/}
+            {/*    </Button>*/}
+            {/*</div>*/}
             <div className="flex items-center justify-center min-h-44 ">
                 <div className="w-1/3">
                     <Select onValueChange={setSelectValue} defaultValue="">
@@ -106,11 +144,11 @@ export default function Manage() {
             </div>
             <div>
                 <Table>
-                    <TableCaption>hogehoge</TableCaption>
+                    <TableCaption>WPLUS</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>職場番号</TableHead>
-                            <TableHead>従業員番号</TableHead>
+                            <TableHead>職場名</TableHead>
+                            <TableHead>従業員名</TableHead>
                             <TableHead>日付</TableHead>
                             <TableHead>開始時刻</TableHead>
                             <TableHead>終了時刻</TableHead>
@@ -120,14 +158,13 @@ export default function Manage() {
                     <TableBody>
                         {/* TODO:mapメソッドでwork_entriesの数だけ追加する */}
                         {records
-                            .filter(record => record.workplace_id === Number(selectValue) || selectValue === "")
                             .map((record) => (
                                 <TableRow key={record.id}>
-                                    <TableCell>{record.workplace_id}</TableCell>
-                                    <TableCell>{record.employee_id}</TableCell>
+                                    <TableCell>{record.workplace_name}</TableCell>
+                                    <TableCell>{record.employee_name}</TableCell>
                                     <TableCell>{record.date}</TableCell>
-                                    <TableCell>{record.start_time}</TableCell>
-                                    <TableCell>{record.end_time}</TableCell>
+                                    <TableCell>{formatMicrosecondsToTime(record.start_time.Microseconds)}</TableCell>
+                                    <TableCell>{formatMicrosecondsToTime(record.end_time.Microseconds)}</TableCell>
                                     <TableCell>{record.comment}</TableCell>
                                     <TableCell>
                                         <Button onClick={() => deleteRow(record.id)}>
@@ -138,6 +175,11 @@ export default function Manage() {
                             ))}
                     </TableBody>
                 </Table>
+                <div>
+                    <Button onClick={() => router.push(`../attendChoice?dataSended=${dataString}`)}>
+                        戻る
+                    </Button>
+                </div>
             </div>
         </div>
     );

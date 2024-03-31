@@ -1,21 +1,16 @@
 // fetch APIを使用する
 import fetch from "node-fetch";
+import cookie from "cookie";
 
-const base_url = "http://" + process.env.DOMAIN + ":8080";
+const base_url = process.env.BASE_URL;
 const headers = { "Content-Type": "application/json" };
-
-// const loginData = {
-//     office_id: 1,
-//     user_id: 1,
-//     password: "pass",
-// };
 
 export default async function login(req, res) {
     try {
         const loginData = req.body;
         console.log(loginData);
         // ログインリクエストを送信
-        const loginResponse = await fetch(base_url + "/login", {
+        const loginResponse = await fetch(base_url + "/login/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify(loginData),
@@ -24,10 +19,11 @@ export default async function login(req, res) {
         console.log(loginResult); // レスポンスのJSONを表示
         // Cookieからトークンを取得
         const token = loginResponse.headers
-        .get("set-cookie")
-        .split(";")[0]
-        .split("=")[1];
-        console.log(token);
+            .get("set-cookie")
+            .split(";")[0]
+            .split("=")[1];
+
+        res.setHeader("Set-cookie", cookie.serialize("token", token, { path: "/", httpOnly: true, maxAge: 60 * 60 }));
 
         res.status(200).json({ data: loginResult, token: token });
     } catch (error) {
