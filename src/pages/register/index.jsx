@@ -70,7 +70,7 @@ export default function Register() {
     return (
         <div>
             <div>
-                {usr.name ? (
+                {usr?.name ? (
                     <div>
                         {`${usr.name}の勤怠登録`}
                     </div>

@@ -75,54 +75,6 @@ export default function Register() {
         }
     };
 
-    // テスト用
-    // const records = [{
-    //     id: 1,
-    //     employee_id: 1,
-    //     workplace_id: 1,
-    //     date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
-    //     start_time: "9:00",
-    //     end_time: "18:00",
-    //     comment: "comment",
-    // },
-    // {
-    //     id: 2,
-    //     employee_id: 2,
-    //     workplace_id: 2,
-    //     date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
-    //     start_time: "9:00",
-    //     end_time: "18:00",
-    //     comment: "comment",
-    // },
-    // {
-    //     id: 3,
-    //     employee_id: 3,
-    //     workplace_id: 3,
-    //     date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
-    //     start_time: "9:00",
-    //     end_time: "18:00",
-    //     comment: "comment",
-    // },
-    // {
-    //     id: 4,
-    //     employee_id: 4,
-    //     workplace_id: 2,
-    //     date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
-    //     start_time: "9:00",
-    //     end_time: "18:00",
-    //     comment: "comment",
-    // },
-    // {
-    //     id: 5,
-    //     employee_id: 5,
-    //     workplace_id: 1,
-    //     date: new Date().toLocaleDateString('ja-JP', {year: "numeric", month: "2-digit", day: "2-digit"}).replaceAll("/", "-"),
-    //     start_time: "9:00",
-    //     end_time: "18:00",
-    //     comment: "comment",
-    // }
-    // ]
-
     return (
         <div>
             <div>
