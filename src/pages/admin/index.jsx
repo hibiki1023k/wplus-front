@@ -78,7 +78,7 @@ export default function Register() {
         };
 
         fetchData();
-    }, []);
+    }, [records, usr.office_id]);
 
     const deleteRow = async (id) => {
         try {
