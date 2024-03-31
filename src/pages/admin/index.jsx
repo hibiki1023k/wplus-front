@@ -19,8 +19,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-export default function register() {
+export default function Register() {
     const router = useRouter();
+    const { data: dataString } = router.query;
 
     const [selectValue, setSelectValue] = useState("");
     const [records, setRecords] = useState([])
