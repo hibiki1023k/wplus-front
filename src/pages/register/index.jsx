@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function register() {
+export default function Register() {
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const [comment, setComment] = useState("")
@@ -21,6 +21,7 @@ export default function register() {
             });
             if(response.ok) {
                 const employeeRecord = await response.json();
+                console.log(employeeRecord);
                 return employeeRecord;
             } else {
                 console.log("Error fetching data", response.status);
