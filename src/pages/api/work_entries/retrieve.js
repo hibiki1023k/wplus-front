@@ -6,6 +6,10 @@ const base_url = process.env.BASE_URL;
 export default async function retrieve(req, res){
     try{
         const office_id = req.query.office_id;
+        if(!office_id){
+            res.status(400).json({error: 'office_id is required'});
+            return;
+        }
         const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
         const token = cookies.token;
 

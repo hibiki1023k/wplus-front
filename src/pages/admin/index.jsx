@@ -19,57 +19,64 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
+// function formatMicrosecondsToTime(microseconds) {
+//     // マイクロ秒をミリ秒に変換
+//     const milliseconds = microseconds / 1000;
+//     // ミリ秒から日付オブジェクトを作成
+//     const date = new Date(milliseconds);
+//     // 時間と分を取得
+//     const hours = date.getUTCHours();
+//     const minutes = date.getUTCMinutes();
+//     // ゼロ埋めしてフォーマット
+//     const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+//     return formattedTime;
+// }
+
 export default function Register() {
     const router = useRouter();
     const [selectValue, setSelectValue] = useState("");
     const [records, setRecords] = useState([])
     const { data: dataString } = router.query;
     const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
-    console.log(usr);
-    
+
     useEffect(() => {
         const fetchData = async () => {
-            try{
-                if(!usr || !usr.office_id){
-                    
-                }
+            try {
                 // cookieからtokenを取得する
                 const token_response = await fetch("/api/getCookie", {
                     method: "GET",
                     headers: {
-                    "Content-Type": "application/json",
+                        "Content-Type": "application/json",
                     },
                 });
-                if(!token_response.ok){
+                if (!token_response.ok) {
                     throw new Error("Token Fetch Failed:", token_response.status);
                 }
                 const usr_token = await token_response.json();
                 console.log("Token Received", usr_token);
 
-                // usr.office_idを/retrieveに送信する
-                console.log(usr.office_id);
-                const office_id = usr.office_id;
-                const response = await fetch(`/api/work_entries/retrieve/${office_id}`, {
+                const response = await fetch(`/api/retrieve/${usr.office_id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${usr_token}`,
                     },
                 });
-                if(!response.ok){
+                if (!response.ok) {
                     console.error("Error fetching data");
                     return;
                 }
                 const data = await response.json();
                 console.log(data);
-            } catch(error) {
+                setRecords(data.record);
+            } catch (error) {
                 console.log("Error fetching data", error);
             }
         };
-        
+
         fetchData();
     }, []);
-    
+
     const deleteRow = async (id) => {
         try {
             const token_response = await fetch("/api/getCookie", {
@@ -78,12 +85,12 @@ export default function Register() {
                     "Content-Type": "application/json",
                 },
             });
-            if(!token_response.ok){
+            if (!token_response.ok) {
                 throw new Error("Token Fetch Failed:", token_response.status);
             }
             const usr_token = await token_response.json();
             console.log("Token Received", usr_token);
-            
+
             const response = await fetch(`/api/work_entries/delete/${id}`, {
                 method: "DELETE",
                 headers: {
@@ -92,17 +99,17 @@ export default function Register() {
                 }
             });
             // console.log(id);
-            if(response.ok){
+            if (response.ok) {
                 alert("データを削除しました。");
             } else {
                 alert("削除に失敗しました。");
                 console.log("Delete Failed:", response.status);
             }
-        } catch(error) {
+        } catch (error) {
             console.log("Error fetching data", error);
         }
     };
-    
+
     return (
         <div>
             {/*<div>*/}
@@ -153,8 +160,8 @@ export default function Register() {
                                     <TableCell>{record.workplace_name}</TableCell>
                                     <TableCell>{record.employee_name}</TableCell>
                                     <TableCell>{record.date}</TableCell>
-                                    <TableCell>{record.start_time}</TableCell>
-                                    <TableCell>{record.end_time}</TableCell>
+                                    {/* <TableCell>{formatMicrosecondsToTime(data.record[i].start_time.Milliseconds)}</TableCell>
+                                    <TableCell>{formatMicrosecondsToTime(data.record[i].end_time.Milliseconds)}</TableCell> */}
                                     <TableCell>{record.comment}</TableCell>
                                     <TableCell>
                                         <Button onClick={() => deleteRow(record.id)}>

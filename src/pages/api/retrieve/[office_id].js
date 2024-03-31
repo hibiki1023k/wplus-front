@@ -15,6 +15,9 @@ export default async function retrieve(req, res) {
       res.status(401).json({ error: "Unauthorized: No token provided" });
       return;
     }
+    if(!office_id){
+      res.status(400),json({error: "office_id is not undefined"});
+    }
 
     const response = await fetch(
       `${base_url}/work_entries/office/${office_id}/`,
