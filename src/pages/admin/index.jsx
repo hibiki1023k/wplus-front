@@ -19,7 +19,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-export default function Register() {
+export default function Manage() {
     const router = useRouter();
     const { data: dataString } = router.query;
 
