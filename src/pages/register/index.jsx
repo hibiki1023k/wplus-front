@@ -75,7 +75,7 @@ export default function Register() {
             <div>
                 <div>
                     <h1 className="text-2xl font-bold text-center p-2 m-2">
-                        test
+                        ${usr?.name}
                     </h1>
                 </div>
                 <div>
