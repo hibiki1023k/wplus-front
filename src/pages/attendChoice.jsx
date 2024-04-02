@@ -6,12 +6,6 @@ export default function AttendChoice() {
     const router = useRouter();
     const { dataSended } = router.query;
     const usr = dataSended ? JSON.parse(decodeURIComponent(dataSended)) : null;
-    // const usr = {
-    //     id: 1,
-    //     office_id: 1,
-    //     name: "test_user",
-    // };
-    const dataSended = encodeURIComponent(JSON.stringify(usr));
 
     const handleRegister = () => {
         if (usr.role !== "admin") {
