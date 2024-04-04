@@ -1,23 +1,28 @@
-import { Button } from "@/components/ui/button";
-import { data } from "autoprefixer";
-import { useRouter } from "next/router";
+import React, { useContext, Suspense } from 'react';
+import { useRouter } from 'next/router';
+import { Button } from '@/components/ui/button';
+import UserContext from './../../context/userContext';
 
 export default function AttendChoice() {
     const router = useRouter();
-    const { dataSended } = router.query;
-    const usr = dataSended ? JSON.parse(decodeURIComponent(dataSended)) : null;
+    const { value, setValue } = useContext(UserContext);
+    const usr = value;
 
     const handleRegister = () => {
-        if (usr.role !== "admin") {
-            router.push(`/register/?data=${dataSended}`);
+        if(usr.role !== 'admin'){
+            router.push(
+                `/register/`
+            );
         } else {
             alert("管理者は勤怠登録ができません。");
         }
     };
 
     const handleManage = () => {
-        if (usr.role !== "employee") {
-            router.push(`/admin/?data=${dataSended}`);
+        if(usr.role !== 'employee'){
+            router.push(
+                `/admin/`
+            );
         } else {
             alert("従業員は勤怠管理ができません。");
         }

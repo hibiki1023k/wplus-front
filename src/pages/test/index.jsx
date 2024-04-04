@@ -1,208 +1,142 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
-import { IoDownload } from "react-icons/io5";
-
-function formatMicrosecondsToTime(microseconds) {
-    // マイクロ秒をミリ秒に変換
-    const milliseconds = microseconds / 1000;
-    // ミリ秒から日付オブジェクトを作成
-    const date = new Date(milliseconds);
-    // console.log(date);
-    // 時間と分を取得
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    // console.log(hours, minutes);
-    // ゼロ埋めしてフォーマット
-    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}`;
-    // console.log(formattedTime);
-    return formattedTime;
-}
+import UserContext from "../../../context/userContext";
 
 export default function Register() {
+    const [date, setDate] = useState();
+    const [start, setStart] = useState("");
+    const [end, setEnd] = useState("");
     const router = useRouter();
-    const [records, setRecords] = useState([]);
-    const { data: dataString } = router.query;
-    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const { value, useValue } = useContext(UserContext);
+    const usr = value;
+    
+    const toUtcTime = (timeString) => {
+        const [hours, minutes] = timeString.split(":").map(Number);
+        const time = new Date(Date.UTC(1970, 0, 1, hours, minutes));
+        return time.toISOString();
+    };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (!usr?.office_id) {
-                    throw new Error("Invalid user data");
-                }
-            // cookieからtokenを取得する
-                const token_response = await fetch("/api/getCookie", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!token_response.ok) {
-                    throw new Error(
-                        "Token Fetch Failed:",
-                        token_response.status
-                    );
-                }
-                const usr_token = await token_response.json();
-
-                const response = await fetch(`/api/retrieve/${usr.office_id}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${usr_token}`,
-                    },
-                });
-                if (!response.ok) {
-                    console.error("Error fetching data");
-                    return;
-                }
-                const data = await response.json();
-                // console.log(data);
-                setRecords(data.record);
-                console.log(records);
-            } catch (error) {
-                console.log("Error fetching data", error);
-            }
+    const handleSubmitTime = async () => {
+        const work_entries = {
+            employee_id: usr.employee_id,
+            workplace_id: usr.workplace_id,
+            date: new Date().toISOString(),
+            start_time: toUtcTime(start),
+            end_time: toUtcTime(end),
         };
-
-        fetchData();
-    }, [usr?.office_id]);
-
-    const deleteRow = async (id) => {
         try {
-            const token_response = await fetch("/api/getCookie", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!token_response.ok) {
-                throw new Error("Token Fetch Failed:", token_response.status);
-            }
+            // const token_response = await fetch("/api/getCookie", {
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            // });
+            // if (!token_response.ok) {
+            //     throw new Error("Token Fetch Failed:", token_response.status);
+            // }
             const usr_token = await token_response.json();
             console.log("Token Received", usr_token);
 
-            const response = await fetch(`/api/work_entries/delete/${id}`, {
-                method: "DELETE",
+            const response = await fetch("/api/work_entries/postTime", {
+                method: "POST",
                 headers: {
-                    "Content-type": "application/json",
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${usr_token}`,
                 },
+                body: JSON.stringify(work_entries),
             });
-            // console.log(id);
-            if (response.status === 204) {
-                alert("データを削除しました。");
-                setRecords(records.filter((record) => record.id !== id));
+
+            console.log(work_entries);
+
+            if (response.ok) {
+                alert("登録が完了しました。");
+                // dataを送信する
+                router.push(`/../attendChoice?dataSended=${dataString}`);
             } else {
-                alert("削除に失敗しました。");
-                console.log("Delete Failed:", response.status);
+                alert("登録に失敗しました。");
+                console.log("Register Failed:", response.status);
             }
         } catch (error) {
             console.log("Error fetching data", error);
         }
     };
-
     return (
-        <div>
-            {/*<div>*/}
-            {/*    <Button>*/}
-            {/*        従業員登録*/}
-            {/*    </Button>*/}
-            {/*</div>*/}
-            <div className="flex flex-col items-center justify-center">
-                {/* CSVダウンロード用のUI */}
-                {/*<div className="">*/}
-                {/*    <a href="/../public/gopher.png" download>*/}
-                {/*        <IoDownload />*/}
-                {/*    </a>*/}
-                {/*</div>*/}
-            </div>
-            <div cassName="min-w-screen">
-                <Table>
-                    <TableCaption>WPLUS</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>職場名</TableHead>
-                            <TableHead>従業員名</TableHead>
-                            <TableHead>日付</TableHead>
-                            <TableHead>開始時刻</TableHead>
-                            <TableHead>終了時刻</TableHead>
-                            <TableHead>備考</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {/* TODO:mapメソッドでwork_entriesの数だけ追加する */}
-                        {!records || records.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={7}>
-                                    No records found
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            records.map((record) => (
-                                <TableRow key={record.id}>
-                                    <TableCell>
-                                        {record.workplace_name}
-                                    </TableCell>
-                                    <TableCell>
-                                        {record.employee_name}
-                                    </TableCell>
-                                    <TableCell>{record.date}</TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.start_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.end_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>{record.comment}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            onClick={() => deleteRow(record.id)}
-                                        >
-                                            削除
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                        ;
-                    </TableBody>
-                </Table>
-                <footer className="flex justify-center m-2">
-                    <Button
-                        onClick={() =>
-                            router.push(
-                                `../attendChoice?dataSended=${dataString}`
-                            )
-                        }
-                    >
-                        戻る
-                    </Button>
-                </footer>
-            </div>
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+            <Card className="w-[320px] bg-white p-4 rounded-lg">
+                <CardHeader className="pb-2">
+                    <CardTitle className="justify-center">
+                        {usr?.name}
+                        test_user
+                    </CardTitle>
+                    <CardDescription>
+                        日付、開始時刻、終了時刻を指定してください
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {/* TODO: Calendarから日付を取得する */}
+                    <div className="flex flex-col space-y-1.5"> 
+                        <Label htmlFor="date">日付</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className={cn("w-[280px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, "PPP") : "日付を選択して下さい"}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[300px] p-0">
+                                <Calendar mode="single" selected={date} onChange={setDate} />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="start">開始時刻</Label>
+                        <Input
+                            type="time"
+                            value={start}
+                            onChange={(e) => setStart(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="end">終了時刻</Label>
+                        <Input
+                            type="time"
+                            value={end}
+                            onChange={(e) => setEnd(e.target.value)}
+                        />
+                    </div>
+                    {/* TODO: toastを使った登録完了通知、punchOut使用しない */}
+                    <CardFooter className="justify-center pt-4 pb-2">
+                        <Button className="mr-4 pr-4" onClick={() => handleSubmitTime()}>登録</Button>
+                        <Button className="ml-4 pl-4"
+                            onClick={() =>
+                                router.push(`../attendChoice?dataSended=${dataString}`)
+                            }
+                        >
+                            戻る
+                        </Button>
+                    </CardFooter>
+                </CardContent>
+            </Card>
         </div>
     );
 }

@@ -1,3 +1,6 @@
+import React, { useState, useEffect, useContext } from "react";
+import UserContext from "./../../../context/userContext";
+import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -15,9 +18,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
 import { IoDownload } from "react-icons/io5";
+import Request from "./../commonRequest";
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -39,9 +41,10 @@ function formatMicrosecondsToTime(microseconds) {
 
 export default function Register() {
     const router = useRouter();
-    const [records, setRecords] = useState([]);
-    const { data: dataString } = router.query;
-    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const [selectValue, setSelectValue] = useState("");
+    const [records, setRecords] = useState([])
+    const { value, setValue } = useContext(UserContext);
+    const usr = value;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,35 +52,24 @@ export default function Register() {
                 if (!usr?.office_id) {
                     throw new Error("Invalid user data");
                 }
-            // cookieからtokenを取得する
-                const token_response = await fetch("/api/getCookie", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!token_response.ok) {
-                    throw new Error(
-                        "Token Fetch Failed:",
-                        token_response.status
-                    );
-                }
-                const usr_token = await token_response.json();
+                // const result = await fetch(`/api/retrieve/${usr.office_id}`, {
+                //     method: "GET",
+                //     headers: {
+                //         "Content-Type": "application/json",
+                //         Authorization: `Bearer ${usr_token}`,
+                //     },
+                // });
+                // if (!response.ok) {
+                //     console.error("Error fetching data");
+                //     return;
+                // }
+                const officeId = usr.office_id;
+                const result = await Request(`retrieve/${officeId}`, "GET");
 
-                const response = await fetch(`/api/retrieve/${usr.office_id}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${usr_token}`,
-                    },
-                });
-                if (!response.ok) {
-                    console.error("Error fetching data");
-                    return;
+                if(!result || result.error){
+                    throw new Error("Error fetching Data")
                 }
-                const data = await response.json();
-                // console.log(data);
-                setRecords(data.record);
+                setRecords(result.record);
                 console.log(records);
             } catch (error) {
                 console.log("Error fetching data", error);
@@ -89,18 +81,6 @@ export default function Register() {
 
     const deleteRow = async (id) => {
         try {
-            const token_response = await fetch("/api/getCookie", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!token_response.ok) {
-                throw new Error("Token Fetch Failed:", token_response.status);
-            }
-            const usr_token = await token_response.json();
-            console.log("Token Received", usr_token);
-
             const response = await fetch(`/api/work_entries/delete/${id}`, {
                 method: "DELETE",
                 headers: {
@@ -122,7 +102,7 @@ export default function Register() {
     };
 
     return (
-        <div>
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             {/*<div>*/}
             {/*    <Button>*/}
             {/*        従業員登録*/}
@@ -136,7 +116,7 @@ export default function Register() {
                 {/*    </a>*/}
                 {/*</div>*/}
             </div>
-            <div cassName="min-w-screen">
+            <div className="min-w-screen">
                 <Table>
                     <TableCaption>WPLUS</TableCaption>
                     <TableHeader>
@@ -195,7 +175,7 @@ export default function Register() {
                     <Button
                         onClick={() =>
                             router.push(
-                                `../attendChoice?dataSended=${dataString}`
+                                `../attendChoice`
                             )
                         }
                     >
