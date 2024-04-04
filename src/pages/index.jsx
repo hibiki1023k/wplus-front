@@ -7,9 +7,11 @@ export default function EmployeeEntry() {
     const [officeId, setOfficeId] = useState("");
     const [userId, setUserId] = useState("");
     const [pass, setPass] = useState("");
-    const router = useRouter(); // ページ遷移用
+    const [loading, setLoading] = useState(false); // ローディング状態を追加
+    const router = useRouter();
 
     const handleSubmit = async () => {
+        setLoading(true); // ローディング開始
         const loginData = {
             office_id: Number(officeId),
             user_id: Number(userId),
@@ -24,24 +26,23 @@ export default function EmployeeEntry() {
                 },
                 body: JSON.stringify(loginData),
             });
-            console.log(loginData);
             if (response.ok) {
-                const { data: data, token: token } = await response.json();
-                console.log(data, token);
-
-                // dataオブジェクトをjson文字列にエンコード
+                const data = await response.json();
                 const dataString = encodeURIComponent(JSON.stringify(data));
-                console.log(dataString);
-
                 router.push(`/attendChoice?dataSended=${dataString}`);
             } else {
                 alert("ログインに失敗しました。");
-                console.error("Login Failed:", response.status);
             }
         } catch (error) {
-            console.log("Error fetching data", error);
+            console.error("Error fetching data", error);
+        } finally {
+            setLoading(false); // ローディング終了
         }
     };
+
+    if (loading) {
+        return <div>Loading...</div>; // ローディング画面
+    }
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
