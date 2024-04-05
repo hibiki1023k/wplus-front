@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
 import UserContext from "./../../../context/userContext";
-import { useRouter } from "next/router";
+import Request from "./../commonRequest";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -18,8 +17,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useRouter } from "next/router";
+import React, { useState, useEffect, useContext } from "react";
 import { IoDownload } from "react-icons/io5";
-import Request from "./../commonRequest";
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -42,8 +42,8 @@ function formatMicrosecondsToTime(microseconds) {
 export default function Register() {
     const router = useRouter();
     const [selectValue, setSelectValue] = useState("");
-    const [records, setRecords] = useState([])
-    const { value, setValue } = useContext(UserContext);
+    const [records, setRecords] = useState([]);
+    const { value } = useContext(UserContext);
     const usr = value;
 
     useEffect(() => {
@@ -66,11 +66,11 @@ export default function Register() {
                 const officeId = usr.office_id;
                 const result = await Request(`retrieve/${officeId}`, "GET");
 
-                if(!result || result.error){
-                    throw new Error("Error fetching Data")
+                if (!result || result.error) {
+                    throw new Error("Error fetching Data");
                 }
                 setRecords(result.record);
-                console.log(records);
+                console.log("records:", records);
             } catch (error) {
                 console.log("Error fetching data", error);
             }
@@ -168,17 +168,10 @@ export default function Register() {
                                 </TableRow>
                             ))
                         )}
-                        ;
                     </TableBody>
                 </Table>
                 <footer className="flex justify-center m-2">
-                    <Button
-                        onClick={() =>
-                            router.push(
-                                `../attendChoice`
-                            )
-                        }
-                    >
+                    <Button onClick={() => router.push(`../attendChoice`)}>
                         戻る
                     </Button>
                 </footer>

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Request from "./../commonRequest";
-import UserContext from "./../../../context/userContext";
+import Request from "./commonRequest";
+import UserContext from "./../../context/userContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,7 +18,7 @@ export default function EmployeeEntry() {
     const [userId, setUserId] = useState("");
     const [pass, setPass] = useState("");
     const router = useRouter(); // ページ遷移用
-    const { value, setValue } = useContext(UserContext);
+    const { setValue } = useContext(UserContext);
 
     const handleSubmit = async () => {
         const loginData = {
@@ -30,7 +30,7 @@ export default function EmployeeEntry() {
         try {
             const result = await Request("login", "POST", loginData);
             if(result.error){
-                alert(`ログインに失敗しました: ${result.error}`);
+                alert("ログインに失敗しました");
             } else {
                 const { data } = result;
 
@@ -46,7 +46,7 @@ export default function EmployeeEntry() {
                 // valueにuser情報をセット
                 setValue(data);
 
-                router.push(`/attendChoice`);
+                router.push(`/attendChoice/`);
             }
         } catch (error) {
             console.log("Error fetching data", error);
