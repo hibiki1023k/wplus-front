@@ -1,11 +1,14 @@
 // pages/_app.js
-import {AuthProvider} from "../../context/AuthContext";
+import React from "react";
+import { UserProvider } from "../../context/userContext";
+import "../styles/globals.css";
+
 
 function MyApp({ Component, pageProps }) {
     return (
-        <AuthProvider>
+        <UserProvider>
             <Component {...pageProps} />
-        </AuthProvider>
+        </UserProvider>
     );
 }
 
