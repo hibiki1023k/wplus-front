@@ -20,6 +20,7 @@ import {
 import { useRouter } from "next/router";
 import React, { useState, useEffect, useContext } from "react";
 import { IoDownload } from "react-icons/io5";
+import RecordCard from "./../../components/admin/RecordCard";
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -48,134 +49,69 @@ export default function Register() {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                if (!usr?.office_id) {
-                    throw new Error("Invalid user data");
-                }
-                // const result = await fetch(`/api/retrieve/${usr.office_id}`, {
-                //     method: "GET",
-                //     headers: {
-                //         "Content-Type": "application/json",
-                //         Authorization: `Bearer ${usr_token}`,
-                //     },
-                // });
-                // if (!response.ok) {
-                //     console.error("Error fetching data");
-                //     return;
-                // }
-                const officeId = usr.office_id;
-                const result = await Request(`retrieve/${officeId}`, "GET");
-
-                if (!result || result.error) {
-                    throw new Error("Error fetching Data");
-                }
-                setRecords(result.record);
-                console.log("records:", records);
-            } catch (error) {
-                console.log("Error fetching data", error);
+            if (!usr?.office_id) {
+                throw new Error("Invalid user data");
             }
+            // const result = await fetch(`/api/retrieve/${usr.office_id}`, {
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         Authorization: `Bearer ${usr_token}`,
+            //     },
+            // });
+            // if (!response.ok) {
+            //     console.error("Error fetching data");
+            //     return;
+            // }
+            Request(`retrieve/${usr.office_id}`, "GET")
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                setRecords(data.record);
+            })
+            .catch(error => {
+                console.error("There was a problem with your fetch operation:", error);
+            })
         };
 
         fetchData();
     }, [usr?.office_id]);
 
     const deleteRow = async (id) => {
-        try {
-            const response = await fetch(`/api/work_entries/delete/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-type": "application/json",
-                    Authorization: `Bearer ${usr_token}`,
-                },
-            });
-            // console.log(id);
-            if (response.status === 204) {
-                alert("データを削除しました。");
+        Request(`work_entries/delete/${id}`, "DELETE")
+        .then(response => {
+            if(response.status === 204){
+                alert('データを削除しました。');
                 setRecords(records.filter((record) => record.id !== id));
             } else {
-                alert("削除に失敗しました。");
-                console.log("Delete Failed:", response.status);
+                alert('データの削除に失敗しました。');
+                console.log('Delete Failed:', response.status);
             }
-        } catch (error) {
-            console.log("Error fetching data", error);
-        }
+        })
+        .catch(error => {
+            console.error('Error fetching data', error);
+        })
     };
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-            {/*<div>*/}
-            {/*    <Button>*/}
-            {/*        従業員登録*/}
-            {/*    </Button>*/}
-            {/*</div>*/}
-            <div className="flex flex-col items-center justify-center">
-                {/* CSVダウンロード用のUI */}
-                {/*<div className="">*/}
-                {/*    <a href="/../public/gopher.png" download>*/}
-                {/*        <IoDownload />*/}
-                {/*    </a>*/}
-                {/*</div>*/}
+            <div>
+                <h1 className="text-2xl font-bold m-4">勤怠管理画面</h1>
             </div>
-            <div className="min-w-screen">
-                <Table>
-                    <TableCaption>WPLUS</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>職場名</TableHead>
-                            <TableHead>従業員名</TableHead>
-                            <TableHead>日付</TableHead>
-                            <TableHead>開始時刻</TableHead>
-                            <TableHead>終了時刻</TableHead>
-                            <TableHead>備考</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {/* TODO:mapメソッドでwork_entriesの数だけ追加する */}
-                        {!records || records.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={7}>
-                                    No records found
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            records.map((record) => (
-                                <TableRow key={record.id}>
-                                    <TableCell>
-                                        {record.workplace_name}
-                                    </TableCell>
-                                    <TableCell>
-                                        {record.employee_name}
-                                    </TableCell>
-                                    <TableCell>{record.date}</TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.start_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.end_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>{record.comment}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            onClick={() => deleteRow(record.id)}
-                                        >
-                                            削除
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-                <footer className="flex justify-center m-2">
-                    <Button onClick={() => router.push(`../attendChoice`)}>
+            <div className='flex-1 overflow-y-auto' style={{maxheight: '50vh'}}>
+                {records.map((record) => (
+                    <RecordCard key={record.id} record={record} />
+                ))}
+            </div>
+            <footer className='flex justify-center m-2'>
+                <Button onClick={() => router.push(`../attendChoice`)}>
                         戻る
-                    </Button>
-                </footer>
-            </div>
+                </Button>
+            </footer>
         </div>
     );
 }

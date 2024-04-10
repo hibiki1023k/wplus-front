@@ -1,54 +1,44 @@
-async function getToken() {
-  try {
-    const token_response = await fetch("/api/getCookie", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!token_response.ok) {
-      throw new Error("Token not found", token_response.status);
+export default async function Request(path, method, bodyInfo = null) {
+    const headers = { "Content-Type": "application/json" };
+    const body = bodyInfo ? JSON.stringify(bodyInfo) : undefined;
+
+	// プライベートエンドポイントにリクエストを送る前に、トークンを取得する
+    if (path !== "login" && path !== "getCookie") {
+        try {
+            const token = await getToken();
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+        } catch (error) {
+            console.error("Error fetching token:", error);
+            // トークン取得エラーはここで処理するか、またはエラーを再スローして呼び出し側で処理します。
+            throw error;  // エラーを再スローする場合
+        }
     }
-    const token = await token_response.json();
-    console.log("Token Received", token);
-    return token;
-  } catch (error) {
-    console.log("Error fetching data", error);
-  }
+
+    const response = await fetch(`/api/${path}`, {
+        method: method,
+        headers: headers,
+        body: (method === "POST" || method === "PUT") ? body : undefined
+    });
+
+    return response;
 }
 
-export default async function Request(path, method, bodyInfo) {
-  const body = bodyInfo && JSON.stringify({ ...bodyInfo });
-  const headers = {
-    "Content-Type": "application/json",
-  };
-
-  if (path !== "login" && path !== "getCookie") {
-    const token = await getToken();
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-  }
-
-  try {
-    const response = await fetch(`/api/${path}/`, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: method !== "GET" && method !== "DELETE" ? body : undefined,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Request Error:", error);
-    return { error: error.message || "Unknown error occurred" };
-  }
+async function getToken() {
+	fetch("/api/getCookie", {
+		method: "GET",
+		headers: {
+		"Content-Type": "application/json",
+		},
+	})
+	.then(response => {
+		if(!response.ok){
+			throw new Error("Network response was not ok");
+		}
+		return response.json();
+	})
+	.catch(error => {
+		console.error("There was a problem with your fetch operation:", error);
+	})
 }

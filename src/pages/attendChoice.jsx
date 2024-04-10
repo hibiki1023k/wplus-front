@@ -1,12 +1,13 @@
-import React, { useContext, Suspense } from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
 import UserContext from './../../context/userContext';
 
 export default function AttendChoice() {
     const router = useRouter();
-    const { value, setValue } = useContext(UserContext);
+    const { value } = useContext(UserContext);
     const usr = value;
+    console.log(usr);
 
     const handleRegister = () => {
         if(usr.role !== 'admin'){
@@ -29,12 +30,13 @@ export default function AttendChoice() {
     };
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+            <h1 className="text-2xl font-bold mb-4">ようこそ、{usr.name}さん！</h1>
             <Button className="mb-4 w-1/3" onClick={handleRegister}>
                 勤怠登録
             </Button>
             <Button className="mt-2 w-1/3" onClick={handleManage}>
                 勤怠管理
             </Button>
-        </div>
+        </div>  
     );
 }

@@ -21,13 +21,14 @@ import { cn } from "@/lib/utils";
 import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import UserContext from "../../../context/userContext";
+import Request from "./../commonRequest";
 
 export default function Register() {
     const [date, setDate] = useState();
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const router = useRouter();
-    const { value, useValue } = useContext(UserContext);
+    const { value } = useContext(UserContext);
     const usr = value;
     
     const toUtcTime = (timeString) => {
@@ -44,49 +45,27 @@ export default function Register() {
             start_time: toUtcTime(start),
             end_time: toUtcTime(end),
         };
-        try {
-            // const token_response = await fetch("/api/getCookie", {
-            //     method: "GET",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            // });
-            // if (!token_response.ok) {
-            //     throw new Error("Token Fetch Failed:", token_response.status);
-            // }
-            const usr_token = await token_response.json();
-            console.log("Token Received", usr_token);
 
-            const response = await fetch("/api/work_entries/postTime", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${usr_token}`,
-                },
-                body: JSON.stringify(work_entries),
-            });
-
-            console.log(work_entries);
-
-            if (response.ok) {
-                alert("登録が完了しました。");
-                // dataを送信する
-                router.push(`/../attendChoice?dataSended=${dataString}`);
-            } else {
+        Request("work_entries/postTime", "POST", work_entries)
+        .then(response => {
+            if(!response.ok){
                 alert("登録に失敗しました。");
-                console.log("Register Failed:", response.status);
+                throw new Error("Network response was not ok");
             }
-        } catch (error) {
-            console.log("Error fetching data", error);
-        }
+            alert("登録が完了しました。");
+            router.push('/attendChoice');
+        })
+        .catch(error => {
+            console.error("There was a problem with your fetch operation:", error);
+        })
     };
+
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <Card className="w-[320px] bg-white p-4 rounded-lg">
                 <CardHeader className="pb-2">
                     <CardTitle className="justify-center">
                         {usr?.name}
-                        test_user
                     </CardTitle>
                     <CardDescription>
                         日付、開始時刻、終了時刻を指定してください
