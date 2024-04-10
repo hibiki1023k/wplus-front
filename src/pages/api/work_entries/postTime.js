@@ -6,10 +6,11 @@ const base_url = process.env.BASE_URL;
 export default async function PunchOut(req, res) {
     try {
         const work_entries = req.body;
+        console.log('data Sended:', work_entries);
         
         // Cookieからトークンを取得
-        const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
-        const token = cookies.token;
+        const Cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
+        const token = Cookies.token;
         
         if (!token) {
             res.status(401).json({ error: 'Unauthorized: No token provided' });
@@ -18,7 +19,7 @@ export default async function PunchOut(req, res) {
         console.log(work_entries);
         
         // 勤怠登録リクエストを送信
-        const punchOutResponse = await fetch(`${base_url}/work_entries/`, {
+        const punchOutResponse = await fetch(`${base_url}/work_entries`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

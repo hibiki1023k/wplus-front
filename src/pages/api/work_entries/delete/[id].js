@@ -38,7 +38,7 @@ export default async function deleteRecord(req, res) {
         }
 
         const resultText = await deleteResponse.text();
-        console.log('unexpected response:', resultText);
+        console.log('unexpected response:', resultText);    
         res.status(deleteResponse.status).json({ message: resultText });
     } catch (error) {
         console.error(error);

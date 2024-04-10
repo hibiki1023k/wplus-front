@@ -1,5 +1,10 @@
+import React, { useState, useContext } from "react";
+import { useRouter } from "next/router";
+import Request from "./commonRequest";
+import UserContext from "./../../context/userContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import { useRouter } from "next/router";
 import React, { useState, useContext } from "react";
 import {
@@ -8,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import UserContext from "./../../context/userContext";
 import LoadingProgress from "../components/Progress";
+
 
 export default function EmployeeEntry() {
     const [officeId, setOfficeId] = useState("");
@@ -20,13 +26,16 @@ export default function EmployeeEntry() {
 
     const handleSubmit = async () => {
         event.preventDefault();
+
         setLoading(true);
+
 
         const loginData = {
             office_id: Number(officeId),
             user_id: Number(userId),
             password: pass,
         };
+
 
         try {
             const response = await fetch("/api/login", {
@@ -44,14 +53,17 @@ export default function EmployeeEntry() {
                 alert("ログインに成功しました。");
                 router.push('/attendChoice');
             } else {
+
                 alert("ログインに失敗しました。");
-                console.error("Login Failed:", response.status);
+                throw new Error("Network response was not ok");
             }
+
         } catch (error) {
             console.log("Error fetching data", error);
         } finally {
             setLoading(false);
         }
+
     };
 
     if(loading) {
