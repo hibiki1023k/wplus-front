@@ -16,8 +16,11 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { IoDownload } from "react-icons/io5";
+import RecordCard from "@/components/admin/RecordCard";
+import UserContext from "./../../../context/userContext";
+import LoadingProgress from "./../../components/Progress";
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -40,10 +43,13 @@ function formatMicrosecondsToTime(microseconds) {
 export default function Register() {
     const router = useRouter();
     const [records, setRecords] = useState([]);
-    const { data: dataString } = router.query;
-    const usr = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+    const [loading, setLoading] = useState(false);
+    const { value } = useContext(UserContext);
+    const usr = value;
+    console.log(usr);
 
     useEffect(() => {
+        setLoading(true);
         const fetchData = async () => {
             try {
                 if (!usr?.office_id) {
@@ -77,6 +83,8 @@ export default function Register() {
                 }
                 const data = await response.json();
                 // console.log(data);
+
+                setLoading(false);
                 setRecords(data.record);
                 console.log(records);
             } catch (error) {
@@ -89,6 +97,7 @@ export default function Register() {
 
     const deleteRow = async (id) => {
         try {
+            setLoading(true);
             const token_response = await fetch("/api/getCookie", {
                 method: "GET",
                 headers: {
@@ -118,91 +127,32 @@ export default function Register() {
             }
         } catch (error) {
             console.log("Error fetching data", error);
+        } finally {
+            setLoading(false);
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+                <LoadingProgress />
+            </div>
+        );
+    }
+
     return (
-        <div>
-            {/*<div>*/}
-            {/*    <Button>*/}
-            {/*        従業員登録*/}
-            {/*    </Button>*/}
-            {/*</div>*/}
-            <div className="flex flex-col items-center justify-center">
-                {/* CSVダウンロード用のUI */}
-                {/*<div className="">*/}
-                {/*    <a href="/../public/gopher.png" download>*/}
-                {/*        <IoDownload />*/}
-                {/*    </a>*/}
-                {/*</div>*/}
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+            <div className="flex-grow overflow-y-auto w-[325px]">
+                <h1 className="text-2xl font-bold m-4">勤怠管理画面</h1>
+                {records.map((record) => (
+                    <RecordCard key={record.id} record={record} onAction={() => deleteRow(record.id)}  />
+                ))}
             </div>
-            <div cassName="min-w-screen">
-                <Table>
-                    <TableCaption>WPLUS</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>職場名</TableHead>
-                            <TableHead>従業員名</TableHead>
-                            <TableHead>日付</TableHead>
-                            <TableHead>開始時刻</TableHead>
-                            <TableHead>終了時刻</TableHead>
-                            <TableHead>備考</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {/* TODO:mapメソッドでwork_entriesの数だけ追加する */}
-                        {!records || records.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={7}>
-                                    No records found
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            records.map((record) => (
-                                <TableRow key={record.id}>
-                                    <TableCell>
-                                        {record.workplace_name}
-                                    </TableCell>
-                                    <TableCell>
-                                        {record.employee_name}
-                                    </TableCell>
-                                    <TableCell>{record.date}</TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.start_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {formatMicrosecondsToTime(
-                                            record.end_time.Microseconds
-                                        )}
-                                    </TableCell>
-                                    <TableCell>{record.comment}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            onClick={() => deleteRow(record.id)}
-                                        >
-                                            削除
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                        ;
-                    </TableBody>
-                </Table>
-                <footer className="flex justify-center m-2">
-                    <Button
-                        onClick={() =>
-                            router.push(
-                                `../attendChoice?dataSended=${dataString}`
-                            )
-                        }
-                    >
+            <footer className='flex justify-center m-2'>
+                <Button onClick={() => router.push(`../attendChoice`)}>
                         戻る
-                    </Button>
-                </footer>
-            </div>
+                </Button>
+            </footer>
         </div>
     );
 }
