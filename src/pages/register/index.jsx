@@ -68,12 +68,12 @@ export default function Register() {
                         {usr?.name}
                     </CardTitle>
                     <CardDescription>
-                        日付、開始時刻、終了時刻を指定してください
+                        開始時刻、終了時刻を指定してください
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {/* TODO: Calendarから日付を取得する */}
-                    <div className="flex flex-col space-y-1.5"> 
+                    {/* <div className="flex flex-col space-y-1.5"> 
                         <Label htmlFor="date">日付</Label>
                         <Popover>
                             <PopoverTrigger asChild>
@@ -86,7 +86,7 @@ export default function Register() {
                                 <Calendar mode="single" selected={date} onChange={setDate} />
                             </PopoverContent>
                         </Popover>
-                    </div>
+                    </div> */}
                     <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="start">開始時刻</Label>
                         <Input
