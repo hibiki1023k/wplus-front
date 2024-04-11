@@ -28,28 +28,25 @@ export default function Register() {
     };
 
     const handleSubmitTime = async () => {
-        setLoading(true);
-        const work_entries = {
-            employee_id: usr.employee_id,
-            workplace_id: usr.workplace_id,
-            date: new Date().toISOString(),
-            start_time: toUtcTime(start),
-            end_time: toUtcTime(end),
-        };
-
-
+        try{
+            setLoading(true);
+            const work_entries = {
+                employee_id: usr.employee_id,
+                workplace_id: usr.workplace_id,
+                date: new Date().toISOString(),
+                start_time: toUtcTime(start),
+                end_time: toUtcTime(end),
+            };
+    
             console.log(work_entries);
-
             if (response.ok) {
                 alert("登録が完了しました。");
                 // dataを送信する
                 router.push('/../attendChoice');
             } else {
-
                 alert("登録に失敗しました。");
                 throw new Error("Network response was not ok");
             }
-
         } catch (error) {
             console.log("Error fetching data", error);
         } finally {

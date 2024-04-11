@@ -1,17 +1,12 @@
 import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import Request from "./commonRequest";
 import UserContext from "./../../context/userContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import { useRouter } from "next/router";
-import React, { useState, useContext } from "react";
 import {
     Card, CardContent, CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import UserContext from "./../../context/userContext";
 import LoadingProgress from "../components/Progress";
 
 

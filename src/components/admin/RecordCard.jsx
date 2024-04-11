@@ -1,11 +1,7 @@
 // components/RecordCard.js
 import React from 'react';
-<<<<<<< HEAD
 import { Button } from "@/components/ui/button";
 import { FaTrash } from 'react-icons/fa6';
-=======
-
->>>>>>> origin/884ff814
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換

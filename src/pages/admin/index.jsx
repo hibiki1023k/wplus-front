@@ -20,9 +20,7 @@ import {
 import { useRouter } from "next/router";
 import React, { useState, useEffect, useContext } from "react";
 import { IoDownload } from "react-icons/io5";
-
 import RecordCard from "@/components/admin/RecordCard";
-import UserContext from "./../../../context/userContext";
 import LoadingProgress from "./../../components/Progress";
 
 
@@ -78,7 +76,7 @@ export default function Register() {
                     throw new Error("Network response was not ok");
                 }
 
-                const data = await response.json();
+                const data = response.json();
                 // console.log(data);
 
                 setLoading(false);
