@@ -1,6 +1,6 @@
 // components/RecordCard.js
 import React from 'react';
-import { Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { FaTrash } from 'react-icons/fa6';
 
 function formatMicrosecondsToTime(microseconds) {
