@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/router";
@@ -7,14 +8,18 @@ import React, { useState, useContext } from "react";
 import UserContext from "./../../../context/userContext";
 import LoadingProgress from "./../../components/Progress";
 
+
 export default function Register() {
+    const [date, setDate] = useState();
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
+
     // const [comment, setComment] = useState("")
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { value } = useContext(UserContext);
     const usr = value;
+
 
     const toUtcTime = (timeString) => {
         const [hours, minutes] = timeString.split(":").map(Number);
@@ -31,27 +36,7 @@ export default function Register() {
             start_time: toUtcTime(start),
             end_time: toUtcTime(end),
         };
-        try {
-            const token_response = await fetch("/api/getCookie", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!token_response.ok) {
-                throw new Error("Token Fetch Failed:", token_response.status);
-            }
-            const usr_token = await token_response.json();
-            console.log("Token Received", usr_token);
 
-            const response = await fetch("/api/work_entries/postTime", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${usr_token}`,
-                },
-                body: JSON.stringify(work_entries),
-            });
 
             console.log(work_entries);
 
@@ -60,9 +45,11 @@ export default function Register() {
                 // dataを送信する
                 router.push('/../attendChoice');
             } else {
+
                 alert("登録に失敗しました。");
-                console.log("Register Failed:", response.status);
+                throw new Error("Network response was not ok");
             }
+
         } catch (error) {
             console.log("Error fetching data", error);
         } finally {
@@ -80,6 +67,7 @@ export default function Register() {
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <Card className="w-[320px] bg-white p-4 rounded-lg shadow-md">
+
                 <CardHeader className="pb-2">
                     <CardTitle className="justify-center">
                         {usr?.name}
@@ -90,7 +78,9 @@ export default function Register() {
                 </CardHeader>
                 <CardContent>
                     {/* TODO: Calendarから日付を取得する */}
+
                     {/* <div className="flex flex-col space-y-1.5">
+
                         <Label htmlFor="date">日付</Label>
                         <Popover>
                             <PopoverTrigger asChild>

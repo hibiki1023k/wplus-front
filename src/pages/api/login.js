@@ -8,7 +8,7 @@ const headers = { "Content-Type": "application/json" };
 export default async function login(req, res) {
     try {
         const loginData = req.body;
-        console.log(loginData);
+
         // ログインリクエストを送信
         const loginResponse = await fetch(base_url + "/login/", {
             method: "POST",
@@ -16,7 +16,7 @@ export default async function login(req, res) {
             body: JSON.stringify(loginData),
         });
         const loginResult = await loginResponse.json();
-        console.log(loginResult); // レスポンスのJSONを表示
+
         // Cookieからトークンを取得
         const token = loginResponse.headers
             .get("set-cookie")

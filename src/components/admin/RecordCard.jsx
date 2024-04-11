@@ -1,7 +1,11 @@
 // components/RecordCard.js
 import React from 'react';
+<<<<<<< HEAD
 import { Button } from "@/components/ui/button";
 import { FaTrash } from 'react-icons/fa6';
+=======
+
+>>>>>>> origin/884ff814
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -21,6 +25,7 @@ function formatMicrosecondsToTime(microseconds) {
     return formattedTime;
 }
 
+
 const RecordCard = ({ record, onAction }) => {
     return (
         <div className="border border-gray-300 rounded-lg p-5 max-w-sm m-2 shadow-md">
@@ -29,6 +34,7 @@ const RecordCard = ({ record, onAction }) => {
                     <FaTrash /> 削除
                 </Button>
             </div>
+
             <div className="mb-3">
                 <strong className="font-semibold">従業員名:</strong> {record.employee_name}
             </div>
@@ -38,7 +44,9 @@ const RecordCard = ({ record, onAction }) => {
             <div className="mb-3">
                 <strong className="font-semibold">日付:</strong> {record.date}
             </div>
+
             <div className='grid grid-cols-2'>
+
                 <div className="mb-3 mr-1">
                     <strong className="font-semibold">開始時刻:</strong> {formatMicrosecondsToTime(record.start_time.Microseconds)}
                 </div>
@@ -46,9 +54,11 @@ const RecordCard = ({ record, onAction }) => {
                     <strong className="font-semibold">終了時刻:</strong> {formatMicrosecondsToTime(record.end_time.Microseconds)}
                 </div>
             </div>
+
             {/* <div>
                 <strong className="font-semibold">備考:</strong> {record.comment}
             </div> */}
+
         </div>
     );
 };
