@@ -1,16 +1,32 @@
 import { Button } from "@/components/ui/button";
-import { data } from "autoprefixer";
 import { useRouter } from "next/router";
-import React, { useContext } from "react";
-import UserContext from "./../../context/userContext";
+import React, { useState, useEffect } from "react";
 
 export default function AttendChoice() {
     const router = useRouter();
-    const { value } = useContext(UserContext);
-    const usr = value;
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        handleGetUser();
+    }, []);
+
+    const handleGetUser = async () => {
+        try {
+            const response = await fetch('/api/getUser', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const user = await response.json();
+            setUser(user);
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
 
     const handleRegister = () => {
-        if (usr.role !== "admin") {
+        if (user && user.role !== "admin") {
             router.push('/register');
         } else {
             alert("管理者は勤怠登録ができません。");
@@ -18,12 +34,9 @@ export default function AttendChoice() {
     };
 
     const handleManage = () => {
-        if (usr.role !== "employee") {
-            router.push('/admin');
-        } else {
-            alert("従業員は勤怠管理ができません。");
-        }
+        router.push('/manage');
     };
+
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <Button className="mb-4 w-1/3" onClick={handleRegister}>

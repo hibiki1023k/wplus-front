@@ -6,7 +6,6 @@ import {
     Card, CardContent, CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import UserContext from "./../../context/userContext";
 import LoadingProgress from "../components/Progress";
 
 export default function EmployeeEntry() {
@@ -14,9 +13,8 @@ export default function EmployeeEntry() {
     const [userId, setUserId] = useState("");
     const [pass, setPass] = useState("");
     const [loading, setLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const [user, setUser] = useState(null);
     const router = useRouter(); // ページ遷移用
-    const { setValue } = useContext(UserContext);
 
     const handleSubmit = async () => {
         event.preventDefault();
@@ -38,9 +36,6 @@ export default function EmployeeEntry() {
             });
             console.log(loginData);
             if (response.ok) {
-                const { data: data } = await response.json();
-                setValue(data);
-
                 alert("ログインに成功しました。");
                 router.push('/attendChoice');
             } else {

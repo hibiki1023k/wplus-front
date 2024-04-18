@@ -1,26 +1,9 @@
-import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { useRouter } from "next/router";
-import React, { useState, useEffect, useContext } from "react";
-import { IoDownload } from "react-icons/io5";
-import RecordCard from "@/components/admin/RecordCard";
-import UserContext from "./../../../context/userContext";
 import LoadingProgress from "./../../components/Progress";
+import RecordCard from "@/components/admin/RecordCard";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
+import React, { useState, useEffect } from "react";
+
 
 function formatMicrosecondsToTime(microseconds) {
     // マイクロ秒をミリ秒に変換
@@ -44,60 +27,47 @@ export default function Register() {
     const router = useRouter();
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
-    const { value } = useContext(UserContext);
-    const usr = value;
-    console.log(usr);
+
 
     useEffect(() => {
         setLoading(true);
-        const fetchData = async () => {
-            try {
-                if (!usr?.office_id) {
-                    throw new Error("Invalid user data");
-                }
-            // cookieからtokenを取得する
-                const token_response = await fetch("/api/getCookie", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!token_response.ok) {
-                    throw new Error(
-                        "Token Fetch Failed:",
-                        token_response.status
-                    );
-                }
-                const usr_token = await token_response.json();
+        handleGetWorkEntries();
+        setLoading(false);
+    }, []);
 
-                const response = await fetch(`/api/retrieve/${usr.office_id}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${usr_token}`,
-                    },
-                });
-                if (!response.ok) {
-                    console.error("Error fetching data");
-                    return;
-                }
-                const data = await response.json();
-                // console.log(data);
 
-                setLoading(false);
-                setRecords(data.record);
-                console.log(records);
-            } catch (error) {
-                console.log("Error fetching data", error);
-            }
-        };
-
-        fetchData();
-    }, [usr?.office_id]);
-
-    const deleteRow = async (id) => {
+    const handleGetWorkEntries = async () => {
+      let user;
         try {
-            setLoading(true);
+            const response = await fetch("/api/getUser", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            console.log(response);
+            user = await response.json();
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+        try {
+            let url = "/api/work_entries";
+            console.log(user);
+            console.log(user.role);
+            switch (user.role) {
+            case "admin":
+                url += "/office";
+                break;
+            case "manager":
+                url += `/workplace/${user.workplace_id}`;
+                break;
+            case "employee":
+                url += `/employee/${user.employee_id}`;
+                break;
+            default:
+                throw new Error("Invalid user role");
+            }
+
             const token_response = await fetch("/api/getCookie", {
                 method: "GET",
                 headers: {
@@ -108,16 +78,39 @@ export default function Register() {
                 throw new Error("Token Fetch Failed:", token_response.status);
             }
             const usr_token = await token_response.json();
-            console.log("Token Received", usr_token);
 
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${usr_token}`,
+                },
+            });
+            
+            const data = await response.json();
+            if(!data){
+              console.log("No data found");
+              return;
+            }
+            console.log(data);
+            setRecords(data);
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    };
+
+    const deleteRow = async (id) => {
+        try {
+            setLoading(true);
+
+            // 内部でToken取得
             const response = await fetch(`/api/work_entries/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-type": "application/json",
-                    Authorization: `Bearer ${usr_token}`,
                 },
             });
-            // console.log(id);
+
             if (response.status === 204) {
                 alert("データを削除しました。");
                 setRecords(records.filter((record) => record.id !== id));

@@ -1,16 +1,25 @@
 // pages/api/work_entries/delete.js
-import fetch from "node-fetch";
+
 import cookie from "cookie";
+import fetch from "node-fetch";
+
 
 const base_url = process.env.BASE_URL;
 
 export default async function deleteRecord(req, res) {
     try {
-        // Cookieからトークンを取得
-        const Cookies = req.headers.cookie
-            ? cookie.parse(req.headers.cookie)
-            : {};
-        const token = Cookies.token;
+        const runMiddleware = (req, res, fn) => {
+            return new Promise((resolve, reject) => {
+            fn(req, res, (result) => {
+                if (result instanceof Error) {
+                return reject(result);
+                }
+                return resolve(result);
+            });
+            });
+        };
+        await runMiddleware(req, res, cookieParser());
+        const token = req.cookies.token;
 
         if (!token) {
             res.status(401).json({ error: "Unauthorized: No token provided" });

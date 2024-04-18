@@ -25,7 +25,7 @@ export default async function login(req, res) {
 
         res.setHeader("Set-cookie", cookie.serialize("token", token, { path: "/", httpOnly: true, maxAge: 60 * 60 }));
 
-        res.status(200).json({ data: loginResult, token: token });
+        res.status(200).json({ success: true });
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ error: "Internal server error" });
