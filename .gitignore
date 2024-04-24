@@ -39,3 +39,6 @@ next-env.d.ts
 .envrc
 node_modules
 .idea
+
+# testing
+/src/pages/test

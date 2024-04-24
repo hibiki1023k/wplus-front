@@ -4,25 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 
-
-function formatMicrosecondsToTime(microseconds) {
-    // マイクロ秒をミリ秒に変換
-    const milliseconds = microseconds / 1000;
-    // ミリ秒から日付オブジェクトを作成
-    const date = new Date(milliseconds);
-    // console.log(date);
-    // 時間と分を取得
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    // console.log(hours, minutes);
-    // ゼロ埋めしてフォーマット
-    const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}`;
-    // console.log(formattedTime);
-    return formattedTime;
-}
-
 export default function Register() {
     const router = useRouter();
     const [records, setRecords] = useState([]);
@@ -37,7 +18,7 @@ export default function Register() {
 
 
     const handleGetWorkEntries = async () => {
-      let user;
+        let user;
         try {
             const response = await fetch("/api/getUser", {
                 method: "GET",
@@ -86,11 +67,11 @@ export default function Register() {
                     Authorization: `Bearer ${usr_token}`,
                 },
             });
-            
+
             const data = await response.json();
             if(!data){
-              console.log("No data found");
-              return;
+                console.log("No data found");
+                return;
             }
             console.log(data);
             setRecords(data);

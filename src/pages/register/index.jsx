@@ -24,31 +24,48 @@ export default function Register() {
     const [end, setEnd] = useState("");
     const [date, setDate] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState();
+    const [employee, setEmployee] = useState();
     const router = useRouter();
 
     useEffect(() => {
-        handleGetUser();
-    },[])
+        const fetchUser = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch('/api/getUser', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const fetchedUser = await response.json();
+                setUser(fetchedUser);
+            } catch (error) {
+                console.error("Error fetching data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
 
-    const handleGetUser = async () => {
-        try {
-            const response = await fetch('/api/getUser', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const user = await response.json();
-            setUser(user);
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-    }
+    // const handleGetUser = async () => {
+    //     try {
+    //         const response = await fetch('/api/getUser', {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+    //         fetched = await response.json();
+    //         setUser(fetched);
+    //     } catch (error) {
+    //         console.error("Error fetching data", error);
+    //     }
+    // }
 
     const handleDateChange = (date) => {
         setDate(date);
-        console.log(date);
     }
 
     const toUtcTime = (timeString) => {
@@ -58,6 +75,10 @@ export default function Register() {
     };
 
     const handleSubmit = async () => {
+        if(!user){
+            alert("ユーザー情報が取得できませんでした。");
+            return;
+        }
         setLoading(true);
         const work_entries = {
             employee_id: user.employee_id,
@@ -117,7 +138,7 @@ export default function Register() {
                         <Label htmlFor="date">日付</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-[280px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                                <Button variant="outline" className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}>
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {date ? format(date, "PPP(E)", { locale:ja }) : "日付を選択して下さい"}
                                 </Button>
