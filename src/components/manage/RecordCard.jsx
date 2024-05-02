@@ -1,6 +1,6 @@
 // components/RecordCard.js
 import React from 'react';
-import { Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { FaTrash } from 'react-icons/fa6';
 
 function formatMicrosecondsToTime(microseconds) {
@@ -17,7 +17,6 @@ function formatMicrosecondsToTime(microseconds) {
     const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
         .toString()
         .padStart(2, "0")}`;
-    // console.log(formattedTime);
     return formattedTime;
 }
 
@@ -46,9 +45,6 @@ const RecordCard = ({ record, onAction }) => {
                     <strong className="font-semibold">終了時刻:</strong> {formatMicrosecondsToTime(record.end_time.Microseconds)}
                 </div>
             </div>
-            {/* <div>
-                <strong className="font-semibold">備考:</strong> {record.comment}
-            </div> */}
         </div>
     );
 };

@@ -39,10 +39,10 @@ export default function AttendChoice() {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-            <Button className="mb-4 w-1/3" onClick={handleRegister}>
+            <Button className="mb-4 w-1/3" onClick={() => router.push('/register')}>
                 勤怠登録
             </Button>
-            <Button className="mt-2 w-1/3" onClick={handleManage}>
+            <Button className="mt-2 w-1/3" onClick={() => router.push('/manage')}>
                 勤怠管理
             </Button>
         </div>

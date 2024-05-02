@@ -1,5 +1,5 @@
 import LoadingProgress from "./../../components/Progress";
-import RecordCard from "@/components/admin/RecordCard";
+import RecordCard from "@/components/manage/RecordCard";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
