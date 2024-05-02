@@ -57,7 +57,6 @@ export default function Register() {
             });
 
             if (response.ok) {
-                alert("登録が完了しました。");
                 // employeesを送信する
                 router.push('/../attendChoice');
             } else {

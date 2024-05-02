@@ -93,7 +93,6 @@ export default function Register() {
             });
 
             if (response.status === 204) {
-                alert("データを削除しました。");
                 setRecords(records.filter((record) => record.id !== id));
             } else {
                 alert("削除に失敗しました。");

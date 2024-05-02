@@ -25,18 +25,6 @@ export default function AttendChoice() {
         }
     };
 
-    const handleRegister = () => {
-        if (user && user.role !== "admin") {
-            router.push('/register');
-        } else {
-            alert("管理者は勤怠登録ができません。");
-        }
-    };
-
-    const handleManage = () => {
-        router.push('/manage');
-    };
-
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <Button className="mb-4 w-1/3" onClick={() => router.push('/register')}>

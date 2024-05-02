@@ -36,7 +36,6 @@ export default function EmployeeEntry() {
             });
             console.log(loginData);
             if (response.ok) {
-                alert("ログインに成功しました。");
                 router.push('/attendChoice');
             } else {
                 alert("ログインに失敗しました。");
