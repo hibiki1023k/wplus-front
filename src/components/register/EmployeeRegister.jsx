@@ -29,6 +29,27 @@ const EmployeeRegister = ({ user, onAction }) => {
         return time.toISOString();
     };
 
+    const toISO8601 = (date) => {
+        // UTC時間に9時間を加える（JSTへ変換）
+        date.setHours(date.getHours() + 9);
+        // JSTとして正確なISO形式の文字列を作成
+        const jstDate = date.toISOString().slice(0, -1) + '+09:00';
+
+        return jstDate;
+    }
+
+    const handleRegister = () => {
+        console.log(date);
+        const work_entries = {
+            employee_id: user.employee_id,
+            workplace_id: user.workplace_id,
+            date: toISO8601(date),
+            start_time: toUtcTime(start),
+            end_time: toUtcTime(end),
+        };
+        onAction(work_entries);
+    };
+
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <Card className="w-[320px] bg-white p-4 rounded-lg shadow-md">
@@ -80,7 +101,7 @@ const EmployeeRegister = ({ user, onAction }) => {
                     </div>
                     {/* TODO: toastを使った登録完了通知、punchOut使用しない */}
                     <CardFooter className="justify-center pt-4 pb-2">
-                        <Button className="mr-4 pr-4" onClick={onAction}>登録</Button>
+                        <Button className="mr-4 pr-4" onClick={handleRegister}>登録</Button>
                         <Button className="ml-4 pl-4"
                             onClick={() => router.push('/attendChoice')}
                         >

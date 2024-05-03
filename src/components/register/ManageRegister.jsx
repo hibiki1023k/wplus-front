@@ -96,15 +96,23 @@ const EmployeeRegister = ({ user, onAction }) => {
         return time.toISOString();
     };
 
+    const toISO8601 = (date) => {
+        // UTC時間に9時間を加える（JSTへ変換）
+        date.setHours(date.getHours() + 9);
+        // JSTとして正確なISO形式の文字列を作成
+        const jstDate = date.toISOString().slice(0, -1) + '+09:00';
+
+        return jstDate;
+    }
+
     const handleRegister = () => {
         const work_entries = {
             employee_id: value.id,
             workplace_id: value.workplace_id,
-            date: new Date(date).toISOString(),
+            date: toISO8601(date),
             start_time: toUtcTime(start),
             end_time: toUtcTime(end),
         };
-        console.log(work_entries);
         onAction(work_entries);
     };
 
