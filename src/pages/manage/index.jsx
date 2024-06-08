@@ -9,13 +9,11 @@ export default function Register() {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
 
-
     useEffect(() => {
         setLoading(true);
         handleGetWorkEntries();
         setLoading(false);
     }, []);
-
 
     const handleGetWorkEntries = async () => {
         let user;
@@ -36,17 +34,17 @@ export default function Register() {
             console.log(user);
             console.log(user.role);
             switch (user.role) {
-            case "admin":
-                url += "/office";
-                break;
-            case "manager":
-                url += `/workplace/${user.workplace_id}`;
-                break;
-            case "employee":
-                url += `/employee/${user.employee_id}`;
-                break;
-            default:
-                throw new Error("Invalid user role");
+                case "admin":
+                    url += "/office";
+                    break;
+                case "manager":
+                    url += `/workplace/${user.workplace_id}`;
+                    break;
+                case "employee":
+                    url += `/employee/${user.employee_id}`;
+                    break;
+                default:
+                    throw new Error("Invalid user role");
             }
 
             const token_response = await fetch("/api/getCookie", {
@@ -69,7 +67,7 @@ export default function Register() {
             });
 
             const data = await response.json();
-            if(!data){
+            if (!data) {
                 console.log("No data found");
                 return;
             }
@@ -105,6 +103,16 @@ export default function Register() {
         }
     };
 
+    const handleDownloadJson = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "records.json");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
@@ -118,12 +126,15 @@ export default function Register() {
             <div className="flex-grow overflow-y-auto w-[325px]">
                 <h1 className="text-2xl font-bold m-4">勤怠管理画面</h1>
                 {records.map((record) => (
-                    <RecordCard key={record.id} record={record} onAction={() => deleteRow(record.id)}  />
+                    <RecordCard key={record.id} record={record} onAction={() => deleteRow(record.id)} />
                 ))}
             </div>
             <footer className='flex justify-center m-2'>
                 <Button onClick={() => router.push(`../attendChoice`)}>
-                        戻る
+                    戻る
+                </Button>
+                <Button onClick={handleDownloadJson} className="ml-2">
+                    ダウンロード
                 </Button>
             </footer>
         </div>
